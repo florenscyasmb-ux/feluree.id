@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Online Shop Beige Aesthetic</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
+
+    /* ===== MUSIM SEMI - DAUN KERING CANVAS ===== */
+    #leafCanvas {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    }
+    body {
+      background: linear-gradient(160deg, #f9f0e3 0%, #f2e4cc 40%, #ecdcc3 70%, #e8d4b8 100%);
+      color: #5c4b42; display: flex; min-height: 100vh; position: relative;
+    }
+
+    /* ===== LOGIN OVERLAY ===== */
+    #loginOverlay {
+      position: fixed; inset: 0;
+      background: linear-gradient(160deg, rgba(249,240,227,0.97) 0%, rgba(232,212,184,0.97) 100%);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999; flex-direction: column;
+    }
+    .login-card {
+      background: rgba(255,250,245,0.96); border-radius: 24px;
+      box-shadow: 0 8px 40px rgba(92,75,66,0.18);
+      padding: 40px 36px; width: 380px; max-width: 95vw;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(219,199,181,0.5);
+    }
+    .login-logo { font-size: 32px; margin-bottom: 6px; }
+    .login-card h2 { font-size: 22px; color: #6a5243; margin-bottom: 4px; }
+    .login-card .subtitle { font-size: 13px; color: #8a7465; margin-bottom: 26px; }
+    .login-tabs { display: flex; gap: 8px; margin-bottom: 22px; }
+    .login-tab { flex: 1; padding: 9px; border-radius: 10px; border: 1.5px solid #dbc7b5; background: transparent; color: #6a5243; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .login-tab.active { background: #b9937b; color: #fff; border-color: #b9937b; }
+    .login-field { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+    .login-field input { padding: 12px 14px; border: 1.5px solid #dbc7b5; border-radius: 12px; background: #fdf8f3; color: #5c4b42; font-size: 14px; outline: none; }
+    .login-field input:focus { border-color: #b9937b; }
+    .login-btn { width: 100%; padding: 13px; background: #b9937b; color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    .login-btn:hover { background: #a57f68; }
+    .login-guest { margin-top: 14px; text-align: center; }
+    .login-guest button { background: transparent; border: none; color: #8a7465; font-size: 13px; cursor: pointer; text-decoration: underline; padding: 0; }
+    .login-error { color: #c98a7a; font-size: 12.5px; margin-top: -4px; display: none; }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 240px; background: rgba(230,213,195,0.92); padding: 24px;
+      box-shadow: 2px 0 16px rgba(0,0,0,0.08);
+      position: sticky; top: 0; height: 100vh; overflow-y: auto;
+      z-index: 10; backdrop-filter: blur(6px);
+    }
+    .sidebar-logo { font-size: 20px; font-weight: 700; color: #6e5849; margin-bottom: 28px; display: flex; align-items: center; gap: 8px; }
+    .sidebar ul { list-style: none; }
+    .sidebar ul li { margin-bottom: 6px; padding: 11px 14px; border-radius: 12px; cursor: pointer; transition: 0.25s; display: flex; align-items: center; justify-content: space-between; font-size: 14px; }
+    .sidebar ul li:hover { background: rgba(217,194,173,0.7); }
+    .sidebar ul li.active { background: #b9937b; color: #fff; font-weight: 600; box-shadow: 0 3px 10px rgba(185,147,123,0.35); }
+    .nav-lock { opacity: 0.55; font-size: 11px; }
+    .nav-icon { margin-right: 6px; }
+
+    .role-box { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(110,88,73,0.2); }
+    .role-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #8b6f5d; margin-bottom: 8px; }
+    .role-badge { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #6e5849; margin-bottom: 10px; }
+    .role-dot { width: 8px; height: 8px; border-radius: 50%; background: #cbb9a8; flex-shrink: 0; }
+    .role-dot.owner { background: #9caf88; }
+    .role-dot.customer { background: #8aa6c2; }
+    .role-box button { width: 100%; font-size: 12.5px; padding: 9px; }
+
+    /* ===== MAIN ===== */
+    .main { flex: 1; padding: 28px; min-width: 0; position: relative; z-index: 1; }
+    .header { margin-bottom: 24px; }
+    .header h1 { font-size: 26px; color: #6a5243; font-weight: 700; }
+    .header p { color: #8a7465; margin-top: 5px; font-size: 14px; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ===== CARDS ===== */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card { background: rgba(255,250,245,0.9); padding: 20px; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.07); backdrop-filter: blur(4px); }
+    .card h3 { font-size: 13px; color: #8b6f5d; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .card p { font-size: 26px; font-weight: 700; color: #5f4a3f; }
+
+    .section { background: rgba(255,250,245,0.92); padding: 22px; border-radius: 20px; margin-bottom: 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); backdrop-filter: blur(4px); }
+    .section h2 { margin-bottom: 16px; color: #6c5446; font-size: 20px; font-weight: 700; }
+    .section-sub { color: #8a7465; font-size: 13px; margin: -10px 0 16px; }
+
+    /* ===== PRODUCT CARD ===== */
+    .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 18px; margin-bottom: 20px; }
+    .product-card { background: rgba(248,241,234,0.95); border-radius: 16px; overflow: hidden; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: transform 0.2s; }
+    .product-card:hover { transform: translateY(-2px); }
+    .product-img-wrap { position: relative; width: 100%; height: 170px; }
+    .product-card img { width: 100%; height: 170px; object-fit: cover; display: block; }
+    .product-card .img-placeholder { width: 100%; height: 170px; background: #e6d5c3; display: flex; align-items: center; justify-content: center; color: #8b6f5d; font-size: 13px; }
+    .remove-img-btn { position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 50%; background: rgba(95,74,63,0.75); color: #fff; border: none; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; padding: 0; transition: 0.2s; }
+    .remove-img-btn:hover { background: #c98a7a; }
+    .product-card h4 { margin: 11px 10px 5px; color: #5f4a3f; font-size: 14px; }
+    .product-card .price-tag { color: #8b6f5d; font-size: 13px; margin-bottom: 4px; }
+    .product-card .price-original { text-decoration: line-through; color: #b9a090; font-size: 12px; }
+    .product-card .price-diskon { color: #c98a7a; font-weight: 700; font-size: 14px; }
+
+    /* ===== QTY CONTROL ===== */
+    .qty-control {
+      display: flex; align-items: center; justify-content: center; gap: 0;
+      margin: 8px 12px 6px; border: 1.5px solid #dbc7b5; border-radius: 10px; overflow: hidden;
+    }
+    .qty-btn {
+      background: #f0e4d8; border: none; color: #6a5243; font-size: 18px; font-weight: 700;
+      width: 36px; height: 36px; cursor: pointer; transition: 0.15s; padding: 0; border-radius: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .qty-btn:hover { background: #dbc7b5; }
+    .qty-num {
+      flex: 1; text-align: center; font-size: 14px; font-weight: 700; color: #5f4a3f;
+      min-width: 36px; padding: 0 4px; background: #fffaf5;
+      border: none; border-left: 1.5px solid #dbc7b5; border-right: 1.5px solid #dbc7b5;
+      height: 36px; line-height: 36px;
+    }
+    .qty-nominal { font-size: 12px; color: #8a7465; margin-bottom: 8px; }
+    .product-actions { display: flex; justify-content: center; gap: 6px; margin-top: 6px; padding-bottom: 12px; flex-wrap: wrap; }
+    .voucher-active-bar { background: #e6f0df; border-radius: 10px; padding: 9px 14px; margin-bottom: 14px; font-size: 13px; color: #4a7a3a; font-weight: 600; display: none; }
+
+    /* ===== BADGE ===== */
+    .badge { display: inline-block; padding: 4px 10px; background: #d9bfa9; color: white; border-radius: 999px; font-size: 11.5px; }
+    .badge.green { background: #9caf88; }
+    .badge.blue { background: #8aa6c2; }
+    .badge.red { background: #c98a7a; }
+    .badge.muted { background: #cbb9a8; }
+
+    /* ===== FORM ===== */
+    form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    input, select, textarea { padding: 11px 13px; border: 1.5px solid #dbc7b5; border-radius: 11px; background: #fdf8f3; outline: none; color: #5f4a3f; width: 100%; font-size: 13.5px; transition: border-color 0.2s; }
+    input:focus, select:focus, textarea:focus { border-color: #b9937b; }
+    textarea { resize: none; min-height: 90px; grid-column: 1 / -1; }
+    .full-col { grid-column: 1 / -1; }
+
+    /* ===== BUTTON ===== */
+    button { background: #b9937b; color: white; border: none; padding: 11px 18px; border-radius: 11px; cursor: pointer; transition: 0.25s; width: fit-content; font-size: 13.5px; }
+    button:hover { background: #a57f68; }
+    button.outline { background: transparent; border: 1.5px solid #c9af98; color: #6a5243; }
+    button.outline:hover { background: #f1e3d4; }
+    button.small { padding: 6px 11px; font-size: 12px; border-radius: 9px; }
+    button.danger { background: #c98a7a; }
+    button.danger:hover { background: #b97060; }
+
+    /* ===== TABLE ===== */
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th { text-align: left; color: #8a7465; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 10px 10px; border-bottom: 1.5px solid #e6d5c3; }
+    td { padding: 11px 10px; border-bottom: 1px solid #efe2d2; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    td input[type="number"], td input[type="text"] { padding: 7px 9px; width: auto; min-width: 85px; }
+    .nominal-cell { display: flex; align-items: center; gap: 6px; }
+    .nominal-cell span { color: #8a7465; font-size: 12px; }
+
+    /* ===== SWITCH ===== */
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; inset: 0; background: #dbc7b5; border-radius: 30px; cursor: pointer; transition: 0.2s; }
+    .slider:before { content: ""; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: 0.2s; }
+    input:checked + .slider { background: #b9937b; }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    /* ===== VOUCHER ===== */
+    .voucher-input-wrap { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+    .voucher-input-wrap input { max-width: 220px; }
+    .voucher-result { padding: 11px 15px; border-radius: 11px; font-size: 13px; font-weight: 600; margin-bottom: 10px; display: none; }
+    .voucher-result.success { background: #e6f0df; color: #4a7a3a; }
+    .voucher-result.error { background: #faeae6; color: #a04a3a; }
+
+    /* ===== PROMO ===== */
+    .promo-box { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+    .promo-item { flex: 1; min-width: 220px; background: linear-gradient(135deg,#f7ede0,#f0dfd0); padding: 18px; border-radius: 16px; position: relative; border: 1px solid rgba(219,191,169,0.4); }
+    .promo-item h4 { margin-bottom: 4px; color: #6a5243; font-size: 15px; }
+    .promo-item .promo-code { font-size: 11px; color: #b9937b; font-weight: 700; letter-spacing: 0.07em; margin-bottom: 6px; }
+    .promo-item p { color: #7f6758; font-size: 12.5px; }
+    .promo-item .promo-badge { position: absolute; top: 12px; right: 14px; background: #b9937b; color: #fff; border-radius: 8px; font-size: 11px; padding: 3px 9px; font-weight: 700; }
+    .promo-del { position: absolute; bottom: 10px; right: 10px; }
+
+    /* ===== CUSTOMER+PENGIRIMAN GABUNG ===== */
+    .combined-table-wrap { overflow-x: auto; }
+    .tab-toggle { display: flex; gap: 0; margin-bottom: 18px; border-radius: 11px; overflow: hidden; border: 1.5px solid #dbc7b5; width: fit-content; }
+    .tab-toggle button { border-radius: 0; border: none; background: #f4e8dc; color: #6a5243; font-size: 13px; padding: 9px 18px; }
+    .tab-toggle button.active { background: #b9937b; color: #fff; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* ===== CHART ===== */
+    .chart-bars { display: flex; align-items: flex-end; gap: 14px; height: 140px; margin-bottom: 10px; }
+    .chart-bars .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .chart-bars .bar { width: 100%; border-radius: 8px 8px 4px 4px; background: linear-gradient(180deg, #d9bfa9, #b9937b); }
+    .chart-bars .blabel { font-size: 11px; color: #8a7465; font-weight: 600; }
+
+    /* ===== SETTINGS ===== */
+    .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #efe2d2; gap: 12px; }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row .t { font-weight: 600; font-size: 14px; color: #5f4a3f; }
+    .settings-row .d { font-size: 12px; color: #8a7465; margin-top: 2px; }
+
+    /* ===== LOCK ===== */
+    .lock-screen { text-align: center; padding: 56px 20px; }
+    .lock-screen .icon { font-size: 36px; margin-bottom: 14px; }
+    .lock-screen h3 { color: #6c5446; font-size: 18px; margin-bottom: 8px; }
+    .lock-screen p { color: #8a7465; font-size: 13px; margin-bottom: 18px; }
+    .lock-screen button { margin: 0 auto; }
+
+    .empty-hint { text-align: center; color: #a89684; font-size: 13px; padding: 22px 0; }
+
+    /* ===== PO CARDS ===== */
+    .po-card-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+    .po-card {
+      background: linear-gradient(135deg, #f7ede0, #f0dfd0);
+      border-radius: 16px; overflow: hidden; text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.07); border: 1px solid rgba(219,191,169,0.4);
+    }
+    .po-card img { width: 100%; height: 150px; object-fit: cover; display: block; }
+    .po-card .po-img-ph { width: 100%; height: 150px; background: #e6d5c3; display: flex; align-items: center; justify-content: center; color: #8b6f5d; font-size: 13px; }
+    .po-card-body { padding: 14px 12px 12px; }
+    .po-card-body h4 { color: #5f4a3f; font-size: 14px; margin-bottom: 5px; }
+    .po-card-body .po-price { color: #8b6f5d; font-size: 13px; margin-bottom: 6px; }
+    .po-card-body .po-meta { font-size: 11.5px; color: #a08070; margin-bottom: 8px; }
+    .po-card-body .po-desc { font-size: 12px; color: #9a8070; margin-bottom: 10px; font-style: italic; }
+    .po-empty { grid-column: 1/-1; text-align: center; color: #a89684; font-size: 13px; padding: 28px 0; }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: static; }
+      .product-list { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Leaf Canvas -->
+<canvas id="leafCanvas"></canvas>
+
+<!-- ============ LOGIN OVERLAY ============ -->
+<div id="loginOverlay">
+  <div class="login-card">
+    <div class="login-logo">🍂</div>
+    <h2>Beige Shop</h2>
+    <div class="subtitle">Pilih mode login untuk melanjutkan</div>
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="switchLoginTab('owner')" id="tabOwner">👑 Owner</button>
+      <button class="login-tab" onclick="switchLoginTab('customer')" id="tabCustomer">🛍️ Customer</button>
+    </div>
+    <div id="ownerLoginForm">
+      <div class="login-field">
+        <input type="password" id="ownerPassInput" placeholder="Password Owner" onkeydown="if(event.key==='Enter') doOwnerLogin()" />
+        <div class="login-error" id="ownerErr">Password salah. Coba lagi.</div>
+      </div>
+      <button class="login-btn" onclick="doOwnerLogin()">Masuk sebagai Owner</button>
+    </div>
+    <div id="customerLoginForm" style="display:none;">
+      <div class="login-field">
+        <input type="text" id="custLoginName" placeholder="Nama kamu (sesuai pesanan)" onkeydown="if(event.key==='Enter') doCustomerLogin()" />
+        <div class="login-error" id="custErr">Silakan masukkan namamu.</div>
+      </div>
+      <button class="login-btn" onclick="doCustomerLogin()">Masuk sebagai Customer</button>
+    </div>
+    <div class="login-guest">
+      <button onclick="doGuestLogin()">Lihat sebagai Tamu (akses terbatas)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">🍂 Beige Shop</div>
+  <ul id="navList">
+    <li class="active" data-page="dashboard"><span><span class="nav-icon">🏠</span>Dashboard</span></li>
+    <li data-page="produk"><span><span class="nav-icon">👗</span>Produk</span></li>
+    <li data-page="preorder"><span><span class="nav-icon">⏳</span>Pre Order</span></li>
+    <li data-page="pesanan" id="navPesanan"><span><span class="nav-icon">📋</span>Pesanan</span><span class="nav-lock" id="pesananLockIcon">🔒</span></li>
+    <li data-page="pelanggan" id="navPelanggan"><span><span class="nav-icon">👥</span>Pelanggan &amp; Pengiriman</span><span class="nav-lock" id="pelangganLockIcon">🔒</span></li>
+    <li data-page="promo"><span><span class="nav-icon">🎟️</span>Promo &amp; Voucher</span></li>
+    <li data-page="laporan" id="navLaporan"><span><span class="nav-icon">📊</span>Laporan</span><span class="nav-lock" id="laporanLockIcon">🔒</span></li>
+    <li data-page="pengaturan" id="navPengaturan"><span><span class="nav-icon">⚙️</span>Pengaturan</span><span class="nav-lock" id="pengaturanLockIcon">🔒</span></li>
+  </ul>
+  <div class="role-box">
+    <div class="role-label">Status Login</div>
+    <div class="role-badge"><span class="role-dot" id="roleDot"></span><span id="roleText">Tamu</span></div>
+    <button class="outline" onclick="doLogout()">Keluar / Ganti Akun</button>
+  </div>
+</aside>
+
+<main class="main">
+
+  <!-- ============ DASHBOARD ============ -->
+  <div class="page active" id="page-dashboard">
+    <div class="header">
+      <h1>🌸 Dashboard Online Shop</h1>
+      <p>Selamat datang di Beige Shop — kelola produk, pesanan, dan promo kamu.</p>
+    </div>
+    <section class="cards">
+      <div class="card"><h3>Total Produk</h3><p id="statProduk">0</p></div>
+      <div class="card"><h3>Pre Order Aktif</h3><p id="statPO">0</p></div>
+      <div class="card"><h3>Total Pesanan</h3><p id="statPesanan">0</p></div>
+      <div class="card"><h3>Customer</h3><p id="statCustomer">0</p></div>
+    </section>
+    <section class="section">
+      <h2>Pesanan Terbaru</h2>
+      <table>
+        <thead><tr><th>Customer</th><th>Produk</th><th>Nominal</th><th>Status</th></tr></thead>
+        <tbody id="recentOrderTable"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- ============ PRODUK ============ -->
+  <div class="page" id="page-produk">
+    <div class="header"><h1>👗 Produk</h1><p>Kelola katalog pakaian toko kamu.</p></div>
+    <section class="section">
+      <h2>Pilihan Produk</h2>
+      <div class="voucher-active-bar" id="voucherActiveBar">🎟️ Voucher aktif: <span id="voucherActiveLabel"></span> — harga sudah disesuaikan ✓</div>
+      <div class="product-list" id="productList"></div>
+      <div id="cartSummary" style="display:none; margin-top:10px; padding:14px 18px; background:#f4e8dc; border-radius:14px; font-size:14px; color:#5f4a3f;">
+        🛒 Total dipilih: <strong id="cartTotal">Rp0</strong>
+        <button class="small" style="margin-left:14px;" onclick="resetCart()">Reset Pilihan</button>
+      </div>
+      <button id="btnTambahProduk" onclick="document.getElementById('formProduk').scrollIntoView({behavior:'smooth'})" style="display:none; margin-top:12px;">+ Tambah Produk Baru</button>
+    </section>
+    <section class="section" id="formProduk" style="display:none;">
+      <h2>Tambah Produk</h2>
+      <form id="produkForm">
+        <input type="text" id="prodName" placeholder="Nama Produk" required />
+        <select id="prodStatus" required>
+          <option value="">Status</option>
+          <option>Ready Stock</option>
+          <option>Pre Order</option>
+          <option>Best Seller</option>
+        </select>
+        <input type="number" id="prodPrice" placeholder="Harga (Rp)" required />
+        <input type="number" id="prodStock" placeholder="Stok" required />
+        <input type="url" id="prodImg" placeholder="Link Gambar Produk (opsional)" />
+        <button type="submit">Simpan Produk</button>
+      </form>
+    </section>
+  </div>
+
+  <!-- ============ PRE ORDER ============ -->
+  <div class="page" id="page-preorder">
+    <div class="header"><h1>⏳ Pre Order</h1><p>Kelola produk pre-order — tambah, aktifkan, dan hapus.</p></div>
+
+    <!-- Daftar PO aktif (semua bisa lihat) -->
+    <section class="section">
+      <h2>Daftar Pre Order Aktif</h2>
+      <p class="section-sub">Produk berikut sedang dalam mode pre-order dan bisa dipesan.</p>
+      <div class="po-card-list" id="poActiveList"></div>
+    </section>
+
+    <!-- Kelola PO — hanya Owner -->
+    <div id="poOwnerSection" style="display:none;">
+      <section class="section">
+        <h2>Tambah Produk Pre Order Baru</h2>
+        <p class="section-sub">Tambahkan produk khusus yang hanya tersedia via pre-order.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:13px;">
+          <input type="text"   id="poName"    placeholder="Nama Produk PO" />
+          <input type="number" id="poPrice"   placeholder="Harga (Rp)" />
+          <input type="number" id="poStock"   placeholder="Estimasi Stok" />
+          <select id="poBatch">
+            <option value="7">Batch 7 hari</option>
+            <option value="14" selected>Batch 14 hari</option>
+            <option value="21">Batch 21 hari</option>
+            <option value="30">Batch 30 hari</option>
+          </select>
+          <input type="url"    id="poImg"     placeholder="Link Gambar (opsional)" />
+          <input type="text"   id="poDesc"    placeholder="Keterangan singkat (opsional)" />
+          <button onclick="tambahPO()" style="width:fit-content;">+ Tambah Pre Order</button>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Pengaturan Status Pre Order</h2>
+        <p class="section-sub">Aktifkan / nonaktifkan status PO per produk dan atur durasinya.</p>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Produk</th><th>Harga</th><th>Status PO</th><th>Durasi Batch</th><th>Keterangan</th><th></th></tr></thead>
+            <tbody id="preorderTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Lock untuk non-owner (tabel pengaturan) -->
+    <div id="poGuestNote" class="section" style="display:none; text-align:center; padding:28px 20px; background:rgba(255,250,245,0.92);">
+      <div style="font-size:28px; margin-bottom:10px;">⏳</div>
+      <p style="color:#8a7465; font-size:13.5px;">Pengaturan pre-order hanya bisa dikelola oleh Owner.<br>Kamu bisa melihat produk PO yang tersedia di atas.</p>
+    </div>
+  </div>
+
+  <!-- ============ PESANAN ============ -->
+  <div class="page" id="page-pesanan">
+    <div class="header"><h1>📋 Pesanan</h1><p>Catat dan kelola semua pesanan masuk.</p></div>
+    <div id="pesananLocked" class="section lock-screen" style="display:none;">
+      <div class="icon">🔒</div><h3>Akses Terbatas</h3>
+      <p>Menu pesanan hanya bisa dikelola oleh Owner.</p>
+      <button onclick="doLogout()">Ganti Akun</button>
+    </div>
+    <div id="pesananContent">
+      <section class="section">
+        <h2>Form Pesanan Baru</h2>
+        <form id="orderForm">
+          <input type="text" id="orderCustomer" placeholder="Nama Customer" list="customerNames" required />
+          <datalist id="customerNames"></datalist>
+          <select id="orderProduct" required><option value="">Pilih Produk</option></select>
+          <input type="number" id="orderQty" placeholder="Jumlah" value="1" required />
+          <input type="number" id="orderNominal" placeholder="Nominal (Rp)" required />
+          <select id="orderPO" required>
+            <option value="">Status Pre Order</option>
+            <option>Ya</option><option>Tidak</option>
+          </select>
+          <button type="submit">Simpan Pesanan</button>
+        </form>
+      </section>
+      <section class="section">
+        <h2>Daftar Pesanan</h2>
+        <table>
+          <thead><tr><th>Customer</th><th>Produk</th><th>Qty</th><th>Nominal</th><th>Status</th><th></th></tr></thead>
+          <tbody id="orderTable"></tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+
+  <!-- ============ PELANGGAN & PENGIRIMAN (GABUNG) ============ -->
+  <div class="page" id="page-pelanggan">
+    <div class="header"><h1>👥 Pelanggan &amp; Pengiriman</h1><p>Data customer dan alamat pengiriman dalam satu tempat.</p></div>
+
+    <!-- LOCKED: tamu tanpa pesanan -->
+    <div id="pelangganLocked" class="section lock-screen" style="display:none;">
+      <div class="icon">🔒</div><h3>Akses Terbatas</h3>
+      <p id="pelangganLockedMsg">Halaman ini hanya bisa diakses oleh Customer yang memiliki pesanan, atau Owner.</p>
+      <button onclick="doLogout()">Ganti Akun</button>
+    </div>
+
+    <!-- OWNER CONTENT: lihat semua -->
+    <div id="pelangganOwnerContent" style="display:none;">
+      <div class="tab-toggle">
+        <button class="active" onclick="switchTab('tabCust')">👤 Data Customer</button>
+        <button onclick="switchTab('tabShip')">📦 Pengiriman</button>
+      </div>
+
+      <!-- Tab Customer -->
+      <div class="tab-pane active" id="tabCust">
+        <section class="section">
+          <h2>Tambah Customer</h2>
+          <form id="customerForm">
+            <input type="text" id="custName"     placeholder="Nama Customer" required />
+            <input type="text" id="custWa"       placeholder="Nomor WhatsApp" required />
+            <input type="text" id="custAddress"  placeholder="Alamat Lengkap" />
+            <input type="text" id="custProvince" placeholder="Provinsi" />
+            <button type="submit">Simpan Customer</button>
+          </form>
+        </section>
+        <section class="section">
+          <h2>Daftar Customer</h2>
+          <div class="combined-table-wrap">
+            <table>
+              <thead><tr><th>Nama</th><th>WhatsApp</th><th>Alamat</th><th>Provinsi</th><th>Total Order</th><th></th></tr></thead>
+              <tbody id="customerTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <!-- Tab Pengiriman -->
+      <div class="tab-pane" id="tabShip">
+        <section class="section">
+          <h2>Tambah Data Pengiriman</h2>
+          <form id="shippingForm">
+            <input type="text" id="shipName"     placeholder="Nama Penerima" required />
+            <input type="text" id="shipPhone"    placeholder="Nomor Telepon" required />
+            <input type="text" id="shipAddress"  placeholder="Alamat Lengkap" required />
+            <input type="text" id="shipZip"      placeholder="Kode Pos" required />
+            <input type="text" id="shipProvince" placeholder="Provinsi" required />
+            <textarea id="shipNote" placeholder="Catatan Pengiriman"></textarea>
+            <button type="submit">Simpan Pengiriman</button>
+          </form>
+        </section>
+        <section class="section">
+          <h2>Semua Data Pengiriman</h2>
+          <div class="combined-table-wrap">
+            <table>
+              <thead><tr><th>Customer</th><th>Telepon</th><th>Alamat</th><th>Kode Pos</th><th>Provinsi</th><th>Catatan</th><th></th></tr></thead>
+              <tbody id="shippingTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- CUSTOMER CONTENT: hanya data miliknya sendiri -->
+    <div id="pelangganCustomerContent" style="display:none;">
+      <div class="tab-toggle">
+        <button class="active" onclick="switchTabCust('tabMyCust')">👤 Profilku</button>
+        <button onclick="switchTabCust('tabMyShip')">📦 Pengirimanku</button>
+        <button onclick="switchTabCust('tabMyOrders')">📋 Pesananku</button>
+      </div>
+
+      <!-- Profil -->
+      <div class="tab-pane active" id="tabMyCust">
+        <section class="section">
+          <h2>Data Profil Saya</h2>
+          <p class="section-sub">Informasi akun kamu di Beige Shop.</p>
+          <div id="myProfileInfo" style="padding:10px 0; font-size:14px; color:#5f4a3f; line-height:2;"></div>
+        </section>
+      </div>
+
+      <!-- Pengiriman customer -->
+      <div class="tab-pane" id="tabMyShip">
+        <section class="section">
+          <h2>Simpan Alamat Pengiriman</h2>
+          <p class="section-sub">Alamat ini akan digunakan untuk pengiriman pesananmu.</p>
+          <form id="shippingFormCustomer">
+            <input type="text" id="shipNameCust"     placeholder="Nama Penerima" required />
+            <input type="text" id="shipPhoneCust"    placeholder="Nomor Telepon" required />
+            <input type="text" id="shipAddressCust"  placeholder="Alamat Lengkap" required />
+            <input type="text" id="shipZipCust"      placeholder="Kode Pos" required />
+            <input type="text" id="shipProvinceCust" placeholder="Provinsi" required />
+            <textarea id="shipNoteCust" placeholder="Catatan Pengiriman"></textarea>
+            <button type="submit">Simpan Pengiriman</button>
+          </form>
+        </section>
+        <section class="section">
+          <h2>Riwayat Alamat Tersimpan</h2>
+          <table>
+            <thead><tr><th>Nama</th><th>Telepon</th><th>Alamat</th><th>Kode Pos</th><th>Provinsi</th></tr></thead>
+            <tbody id="shippingTableCustomer"></tbody>
+          </table>
+        </section>
+      </div>
+
+      <!-- Pesanan customer sendiri -->
+      <div class="tab-pane" id="tabMyOrders">
+        <section class="section">
+          <h2>Riwayat Pesananku</h2>
+          <p class="section-sub">Daftar pesanan yang kamu buat di Beige Shop.</p>
+          <table>
+            <thead><tr><th>Produk</th><th>Qty</th><th>Nominal</th><th>Status</th></tr></thead>
+            <tbody id="myOrdersTable"></tbody>
+          </table>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PROMO & VOUCHER ============ -->
+  <div class="page" id="page-promo">
+    <div class="header"><h1>🎟️ Promo &amp; Voucher</h1><p>Kode promo dan voucher diskon Beige Shop.</p></div>
+
+    <div id="voucherCustomerSection" style="display:none;">
+      <section class="section">
+        <h2>Gunakan Voucher</h2>
+        <p class="section-sub">Masukkan kode voucher untuk otomatis kurangi harga produk.</p>
+        <div class="voucher-input-wrap">
+          <input type="text" id="voucherInputCode" placeholder="Kode voucher (cth: DISKON10)" style="text-transform:uppercase; max-width:220px;" />
+          <button onclick="pakaiVoucher()">Pakai</button>
+          <button class="outline" onclick="batalVoucher()" id="btnBatalVoucher" style="display:none;">✕ Batalkan</button>
+        </div>
+        <div class="voucher-result" id="voucherResult"></div>
+      </section>
+    </div>
+
+    <section class="section">
+      <h2>Promo Aktif</h2>
+      <div class="promo-box" id="promoBox"></div>
+    </section>
+
+    <div id="promoOwnerSection" style="display:none;">
+      <section class="section">
+        <h2>Buat Promo / Voucher Baru</h2>
+        <p class="section-sub">Voucher langsung bisa digunakan customer saat membeli produk.</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:13px;">
+          <input type="text" id="promoTitle" placeholder="Judul Promo" />
+          <input type="text" id="promoCode" placeholder="Kode Voucher (cth: LEBARAN20)" style="text-transform:uppercase;" />
+          <select id="promoDiscountType">
+            <option value="persen">% Persen</option>
+            <option value="nominal">Rp Nominal</option>
+          </select>
+          <input type="number" id="promoDiscountValue" placeholder="Nilai diskon" />
+          <input type="number" id="promoMinBelanja" placeholder="Min. belanja Rp (kosongkan jika tidak ada)" />
+          <textarea id="promoDesc" placeholder="Deskripsi promo (opsional)" style="grid-column:1/-1; min-height:70px;"></textarea>
+          <button onclick="simpanPromo()" style="width:fit-content;">Simpan Promo</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ============ LAPORAN ============ -->
+  <div class="page" id="page-laporan">
+    <div class="header"><h1>📊 Laporan Penjualan</h1><p>Pantau performa toko 30 hari terakhir.</p></div>
+    <div id="laporanLocked" class="section lock-screen">
+      <div class="icon">🔒</div><h3>Halaman Khusus Owner</h3>
+      <p>Laporan hanya bisa dilihat oleh Owner.</p>
+      <button onclick="doLogout()">Ganti Akun</button>
+    </div>
+    <div id="laporanContent" style="display:none;">
+      <section class="cards">
+        <div class="card"><h3>Total Omzet</h3><p id="laporanOmzet">Rp0</p></div>
+        <div class="card"><h3>Total Pesanan</h3><p id="laporanPesanan">0</p></div>
+        <div class="card"><h3>Rata-rata Order</h3><p id="laporanRataRata">Rp0</p></div>
+        <div class="card"><h3>Customer Aktif</h3><p id="laporanCustomer">0</p></div>
+      </section>
+      <section class="section">
+        <h2>Penjualan per Minggu</h2>
+        <div class="chart-bars">
+          <div class="bar-col"><div class="bar" style="height:45%;"></div><div class="blabel">M1</div></div>
+          <div class="bar-col"><div class="bar" style="height:62%;"></div><div class="blabel">M2</div></div>
+          <div class="bar-col"><div class="bar" style="height:38%;"></div><div class="blabel">M3</div></div>
+          <div class="bar-col"><div class="bar" style="height:80%;"></div><div class="blabel">M4</div></div>
+        </div>
+      </section>
+      <section class="section">
+        <h2>Penggunaan Voucher</h2>
+        <table>
+          <thead><tr><th>Kode</th><th>Digunakan</th><th>Total Hemat</th></tr></thead>
+          <tbody id="voucherUsageTable"></tbody>
+        </table>
+      </section>
+    </div>
+  </div>
+
+  <!-- ============ PENGATURAN ============ -->
+  <div class="page" id="page-pengaturan">
+    <div class="header"><h1>⚙️ Pengaturan</h1><p>Atur profil dan preferensi toko.</p></div>
+    <div id="pengaturanLocked" class="section lock-screen">
+      <div class="icon">🔒</div><h3>Halaman Khusus Owner</h3>
+      <p>Pengaturan hanya bisa diubah oleh Owner.</p>
+      <button onclick="doLogout()">Ganti Akun</button>
+    </div>
+    <div id="pengaturanContent" style="display:none;">
+      <section class="section">
+        <h2>Profil Toko</h2>
+        <form id="settingsForm">
+          <input type="text" value="Beige Shop" placeholder="Nama Toko" />
+          <input type="text" value="0812-3456-7890" placeholder="No. WhatsApp Toko" />
+          <textarea>Pakaian ready-stock & pre-order dengan tampilan beige aesthetic.</textarea>
+          <button type="submit">Simpan Perubahan</button>
+        </form>
+      </section>
+      <section class="section">
+        <h2>Preferensi</h2>
+        <div class="settings-row">
+          <div><div class="t">Terima Pesanan Baru</div><div class="d">Tampilkan toko sebagai aktif</div></div>
+          <label class="switch"><input type="checkbox" checked /><span class="slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <div><div class="t">Notifikasi WhatsApp</div><div class="d">Kirim notif status pesanan ke customer</div></div>
+          <label class="switch"><input type="checkbox" checked /><span class="slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <div><div class="t">Mode Pre-Order Otomatis</div><div class="d">Aktifkan PO saat stok habis</div></div>
+          <label class="switch"><input type="checkbox" /><span class="slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <div><div class="t">Ganti Password Owner</div><div class="d">Ubah password login Owner</div></div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input type="password" id="newOwnerPass" placeholder="Password baru" style="width:150px;" />
+            <button class="small" onclick="gantiPassword()">Ganti</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ===== LEAF ANIMATION ===== */
+(function(){
+  const canvas = document.getElementById('leafCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, leaves = [];
+
+  // Warna daun kering musim gugur/semi
+  const leafColors = [
+    '#c8854a','#d4924e','#b87240','#e0a060','#c96b3a',
+    '#bf6030','#d4884a','#a85c2a','#e8b070','#cc7840',
+    '#9e5020','#b86838','#d69050'
+  ];
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function makeLeaf(){
+    const size = 8 + Math.random()*14;
+    return {
+      x: Math.random()*W,
+      y: -size,
+      size,
+      color: leafColors[Math.floor(Math.random()*leafColors.length)],
+      speedY: 0.6 + Math.random()*1.2,
+      speedX: (Math.random()-0.5)*0.8,
+      rot: Math.random()*Math.PI*2,
+      rotSpeed: (Math.random()-0.5)*0.06,
+      wobble: Math.random()*Math.PI*2,
+      wobbleSpeed: 0.02 + Math.random()*0.02,
+      opacity: 0.55 + Math.random()*0.35,
+      type: Math.floor(Math.random()*3) // 0=oval, 1=maple, 2=elongated
+    };
+  }
+
+  function drawLeaf(l){
+    ctx.save();
+    ctx.globalAlpha = l.opacity;
+    ctx.translate(l.x, l.y);
+    ctx.rotate(l.rot);
+    ctx.fillStyle = l.color;
+    ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    if(l.type === 0){
+      // Oval leaf
+      ctx.ellipse(0, 0, l.size*0.45, l.size*0.75, 0, 0, Math.PI*2);
+    } else if(l.type === 1){
+      // Simple maple-ish leaf (5 points)
+      const r = l.size*0.55, s = l.size*0.3;
+      for(let i=0;i<5;i++){
+        const a = (i/5)*Math.PI*2 - Math.PI/2;
+        const ar = a + Math.PI/5;
+        ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+        ctx.lineTo(Math.cos(ar)*s, Math.sin(ar)*s);
+      }
+      ctx.closePath();
+    } else {
+      // Elongated teardrop leaf
+      ctx.moveTo(0, -l.size*0.75);
+      ctx.bezierCurveTo(l.size*0.4, -l.size*0.3, l.size*0.4, l.size*0.3, 0, l.size*0.75);
+      ctx.bezierCurveTo(-l.size*0.4, l.size*0.3, -l.size*0.4, -l.size*0.3, 0, -l.size*0.75);
+    }
+    ctx.fill();
+    ctx.stroke();
+    // Vein
+    ctx.globalAlpha = l.opacity * 0.35;
+    ctx.strokeStyle = '#6a3a10';
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(0, -l.size*0.6);
+    ctx.lineTo(0, l.size*0.6);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function update(){
+    ctx.clearRect(0,0,W,H);
+    // Spawn leaves
+    if(leaves.length < 55 && Math.random() < 0.18) leaves.push(makeLeaf());
+
+    leaves = leaves.filter(l => {
+      l.wobble += l.wobbleSpeed;
+      l.x += l.speedX + Math.sin(l.wobble)*0.7;
+      l.y += l.speedY;
+      l.rot += l.rotSpeed;
+      drawLeaf(l);
+      return l.y < H + 30;
+    });
+    requestAnimationFrame(update);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  update();
+})();
+
+/* ===== DATA ===== */
+let OWNER_PASSWORD = localStorage.getItem('ownerPass') || 'owner123';
+let currentRole = null;
+let currentCustomerName = null;
+let activeVoucher = null;
+let cart = {}; // { productIndex: qty }
+
+let products = [
+  { name: 'Basic T-Shirt', price: 120000, stock: 18, status: 'Ready Stock', img: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&q=80', po: false, batch: '7' },
+  { name: 'Beige Hoodie',  price: 210000, stock: 6,  status: 'Pre Order',   img: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400&q=80', po: true,  batch: '14' },
+  { name: 'Casual Dress',  price: 185000, stock: 12, status: 'Best Seller', img: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=80', po: false, batch: '7' },
+];
+let orders = [
+  { customer:'Anita N.', product:'Basic T-Shirt', qty:2, nominal:240000, po:'Tidak' },
+  { customer:'Dewi P.',  product:'Beige Hoodie',  qty:1, nominal:210000, po:'Ya'    },
+];
+let customers = [
+  { name:'Anita N.', wa:'0812-1111-2222', address:'Jl. Melati No.5, Jakarta', province:'DKI Jakarta', orders:5 },
+  { name:'Dewi P.',  wa:'0813-3333-4444', address:'Jl. Mawar No.3, Bandung',  province:'Jawa Barat',  orders:3 },
+];
+let shippings = [];
+let promos = [
+  { title:'Voucher DISKON10', code:'DISKON10', discountType:'persen',  discountValue:10, minBelanja:150000, desc:'Potongan 10% untuk min. belanja Rp150.000', usedCount:0, totalSaved:0 },
+  { title:'Promo HEMAT20K',   code:'HEMAT20K',  discountType:'nominal', discountValue:20000, minBelanja:0, desc:'Potongan Rp20.000 untuk semua pembelian', usedCount:0, totalSaved:0 },
+  { title:'Pre Order Deals',  code:'PREORDER5', discountType:'persen',  discountValue:5,  minBelanja:0, desc:'Diskon 5% khusus produk pre-order', usedCount:0, totalSaved:0 },
+];
+
+const rupiah = n => 'Rp' + Number(n).toLocaleString('id-ID');
+const badgeClass = s => s==='Ready Stock'?'':s==='Pre Order'?'blue':s==='Best Seller'?'green':'muted';
+
+/* ===== LOGIN ===== */
+function switchLoginTab(tab){
+  document.getElementById('tabOwner').classList.toggle('active', tab==='owner');
+  document.getElementById('tabCustomer').classList.toggle('active', tab==='customer');
+  document.getElementById('ownerLoginForm').style.display = tab==='owner'?'':'none';
+  document.getElementById('customerLoginForm').style.display = tab==='customer'?'':'none';
+}
+function doOwnerLogin(){
+  if(document.getElementById('ownerPassInput').value === OWNER_PASSWORD){
+    currentRole='owner'; currentCustomerName=null;
+    document.getElementById('loginOverlay').style.display='none';
+    updateRoleUI(); renderAll();
+  } else { document.getElementById('ownerErr').style.display='block'; }
+}
+function doCustomerLogin(){
+  const name = document.getElementById('custLoginName').value.trim();
+  if(!name){ document.getElementById('custErr').style.display='block'; return; }
+  currentRole='customer'; currentCustomerName=name;
+  if(!customers.find(c=>c.name.toLowerCase()===name.toLowerCase()))
+    customers.push({name,wa:'-',address:'-',province:'-',orders:0});
+  document.getElementById('loginOverlay').style.display='none';
+  updateRoleUI(); renderAll();
+}
+function doGuestLogin(){
+  currentRole='guest'; currentCustomerName=null;
+  document.getElementById('loginOverlay').style.display='none';
+  updateRoleUI(); renderAll();
+}
+function doLogout(){
+  currentRole=null; currentCustomerName=null; activeVoucher=null; cart={};
+  document.getElementById('ownerPassInput').value='';
+  document.getElementById('custLoginName').value='';
+  document.getElementById('ownerErr').style.display='none';
+  document.getElementById('loginOverlay').style.display='flex';
+  navLis.forEach(x=>x.classList.remove('active'));
+  document.querySelector('[data-page="dashboard"]').classList.add('active');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-dashboard').classList.add('active');
+}
+function customerHasPesanan(){
+  if(!currentCustomerName) return false;
+  return orders.some(o=>o.customer.toLowerCase()===currentCustomerName.toLowerCase());
+}
+
+/* ===== ROLE UI ===== */
+function updateRoleUI(){
+  const isOwner = currentRole==='owner';
+  const isCust  = currentRole==='customer';
+  const hasPes  = customerHasPesanan();
+
+  // Sidebar dot
+  const dot = document.getElementById('roleDot');
+  dot.className = 'role-dot'+(isOwner?' owner':isCust?' customer':'');
+  document.getElementById('roleText').textContent = isOwner?'👑 Owner':isCust?`🛍️ ${currentCustomerName}`:'👤 Tamu';
+
+  // Lock icons
+  document.getElementById('pesananLockIcon').style.display  = isOwner?'none':'inline';
+  document.getElementById('pelangganLockIcon').style.display = (isOwner||(isCust&&hasPes))?'none':'inline';
+  document.getElementById('laporanLockIcon').style.display  = isOwner?'none':'inline';
+  document.getElementById('pengaturanLockIcon').style.display = isOwner?'none':'inline';
+
+  // Pesanan
+  document.getElementById('pesananLocked').style.display  = isOwner?'none':'block';
+  document.getElementById('pesananContent').style.display = isOwner?'block':'none';
+
+  // Laporan
+  document.getElementById('laporanLocked').style.display  = isOwner?'none':'block';
+  document.getElementById('laporanContent').style.display = isOwner?'block':'none';
+  if(isOwner) renderLaporan();
+
+  // Pengaturan
+  document.getElementById('pengaturanLocked').style.display  = isOwner?'none':'block';
+  document.getElementById('pengaturanContent').style.display = isOwner?'block':'none';
+
+  // Pelanggan
+  if(isOwner){
+    document.getElementById('pelangganLocked').style.display = 'none';
+    document.getElementById('pelangganOwnerContent').style.display = 'block';
+    document.getElementById('pelangganCustomerContent').style.display = 'none';
+  } else if(isCust && hasPes){
+    document.getElementById('pelangganLocked').style.display = 'none';
+    document.getElementById('pelangganOwnerContent').style.display = 'none';
+    document.getElementById('pelangganCustomerContent').style.display = 'block';
+    renderMyProfile();
+    renderCustomerShipping();
+  } else {
+    document.getElementById('pelangganLocked').style.display = 'block';
+    document.getElementById('pelangganLockedMsg').textContent = isCust
+      ? 'Kamu belum memiliki pesanan. Halaman ini tersedia setelah kamu melakukan pembelian.'
+      : 'Halaman ini hanya bisa diakses oleh Customer yang memiliki pesanan, atau Owner.';
+    document.getElementById('pelangganOwnerContent').style.display = 'none';
+    document.getElementById('pelangganCustomerContent').style.display = 'none';
+  }
+
+  // Promo
+  document.getElementById('promoOwnerSection').style.display = isOwner?'block':'none';
+  document.getElementById('voucherCustomerSection').style.display = isCust?'block':'none';
+
+  // Produk form
+  document.getElementById('btnTambahProduk').style.display = isOwner?'':'none';
+  document.getElementById('formProduk').style.display = isOwner?'':'none';
+
+  renderProducts();
+}
+
+/* ===== TABS ===== */
+function switchTab(id){
+  document.querySelectorAll('#pelangganOwnerContent .tab-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('#pelangganOwnerContent .tab-toggle button').forEach((b,i)=>{
+    b.classList.toggle('active', (i===0&&id==='tabCust')||(i===1&&id==='tabShip'));
+  });
+}
+function switchTabCust(id){
+  document.querySelectorAll('#pelangganCustomerContent .tab-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('#pelangganCustomerContent .tab-toggle button').forEach((b,i)=>{
+    b.classList.toggle('active',(i===0&&id==='tabMyCust')||(i===1&&id==='tabMyShip'));
+  });
+}
+
+/* ===== NAVIGASI ===== */
+const navLis = document.querySelectorAll('#navList li');
+navLis.forEach(li=>{
+  li.addEventListener('click',()=>{
+    navLis.forEach(x=>x.classList.remove('active'));
+    li.classList.add('active');
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+li.dataset.page).classList.add('active');
+    updateRoleUI();
+  });
+});
+
+/* ===== CART / QTY ===== */
+function changeQty(i, delta){
+  const cur = cart[i] || 0;
+  const newQty = Math.max(0, Math.min(cur+delta, products[i].stock));
+  if(newQty === 0) delete cart[i]; else cart[i]=newQty;
+  updateQtyDisplay(i);
+  updateCartSummary();
+}
+function updateQtyDisplay(i){
+  const el = document.getElementById('qtyNum_'+i);
+  const nomEl = document.getElementById('qtyNom_'+i);
+  if(!el) return;
+  const qty = cart[i]||0;
+  el.textContent = qty;
+  // Hitung harga setelah diskon jika ada voucher
+  let harga = products[i].price;
+  if(activeVoucher && currentRole==='customer'){
+    const ok = !activeVoucher.minBelanja || harga>=activeVoucher.minBelanja;
+    if(ok){
+      harga = activeVoucher.discountType==='persen'
+        ? Math.round(harga*(1-activeVoucher.discountValue/100))
+        : Math.max(0, harga-activeVoucher.discountValue);
+    }
+  }
+  if(nomEl) nomEl.textContent = qty>0 ? `Total: ${rupiah(harga*qty)}` : '';
+}
+function updateCartSummary(){
+  const total = Object.entries(cart).reduce((s,[i,q])=>{
+    let harga = products[i].price;
+    if(activeVoucher && currentRole==='customer'){
+      const ok = !activeVoucher.minBelanja || harga>=activeVoucher.minBelanja;
+      if(ok) harga = activeVoucher.discountType==='persen'
+        ? Math.round(harga*(1-activeVoucher.discountValue/100))
+        : Math.max(0,harga-activeVoucher.discountValue);
+    }
+    return s+harga*q;
+  },0);
+  const hasItems = Object.keys(cart).length>0;
+  document.getElementById('cartSummary').style.display = hasItems?'block':'none';
+  document.getElementById('cartTotal').textContent = rupiah(total);
+}
+function resetCart(){ cart={}; renderProducts(); updateCartSummary(); }
+
+/* ===== RENDER PRODUCTS ===== */
+function renderProducts(){
+  document.getElementById('productList').innerHTML = products.map((p,i)=>{
+    let hargaDiskon=null, labelDiskon='';
+    if(activeVoucher && currentRole==='customer'){
+      const ok = !activeVoucher.minBelanja || p.price>=activeVoucher.minBelanja;
+      if(ok){
+        hargaDiskon = activeVoucher.discountType==='persen'
+          ? Math.round(p.price*(1-activeVoucher.discountValue/100))
+          : Math.max(0,p.price-activeVoucher.discountValue);
+        labelDiskon = activeVoucher.discountType==='persen'
+          ? `Hemat ${activeVoucher.discountValue}%`
+          : `Hemat ${rupiah(activeVoucher.discountValue)}`;
+      }
+    }
+
+    const priceHtml = hargaDiskon!==null
+      ? `<p class="price-original">${rupiah(p.price)}</p>
+         <p class="price-diskon">${rupiah(hargaDiskon)} <span style="font-size:10px;font-weight:normal;">(${labelDiskon})</span></p>`
+      : `<p class="price-tag">${rupiah(p.price)} · stok ${p.stock}</p>`;
+
+    const qty = cart[i]||0;
+    const hargaEfektif = hargaDiskon!==null ? hargaDiskon : p.price;
+
+    const qtyBlock = `
+      <div class="qty-control">
+        <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
+        <span class="qty-num" id="qtyNum_${i}">${qty}</span>
+        <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
+      </div>
+      <div class="qty-nominal" id="qtyNom_${i}">${qty>0?'Total: '+rupiah(hargaEfektif*qty):''}</div>`;
+
+    const deleteBtn = currentRole==='owner'
+      ? `<button class="outline small danger" onclick="hapusProduk(${i})">Hapus</button>` : '';
+    const removeImgBtn = currentRole==='owner'
+      ? `<button class="remove-img-btn" onclick="hapusGambarProduk(${i})">×</button>` : '';
+
+    return `<div class="product-card">
+      <div class="product-img-wrap">
+        ${p.img
+          ? `<img src="${p.img}" alt="${p.name}" onerror="this.parentElement.innerHTML='<div class=\\'img-placeholder\\'>Tanpa gambar</div>'">${removeImgBtn}`
+          : `<div class="img-placeholder">Tanpa gambar</div>`}
+      </div>
+      <h4>${p.name}</h4>
+      ${priceHtml}
+      <span class="badge ${badgeClass(p.status)}">${p.status}</span>
+      ${qtyBlock}
+      <div class="product-actions">${deleteBtn}</div>
+    </div>`;
+  }).join('')||'<div class="empty-hint">Belum ada produk</div>';
+
+  // Recalc cart display
+  Object.keys(cart).forEach(i=>updateQtyDisplay(Number(i)));
+
+  document.getElementById('statProduk').textContent = products.length;
+  document.getElementById('statPO').textContent = products.filter(p=>p.po).length;
+  const sel = document.getElementById('orderProduct');
+  sel.innerHTML='<option value="">Pilih Produk</option>'+products.map(p=>`<option>${p.name}</option>`).join('');
+
+  const bar = document.getElementById('voucherActiveBar');
+  const lbl = document.getElementById('voucherActiveLabel');
+  if(activeVoucher && currentRole==='customer'){
+    bar.style.display='block';
+    lbl.textContent=`${activeVoucher.code} (${activeVoucher.discountType==='persen'?activeVoucher.discountValue+'%':rupiah(activeVoucher.discountValue)+' off'})`;
+  } else { bar.style.display='none'; }
+}
+
+function hapusGambarProduk(i){ products[i].img=null; renderProducts(); }
+function hapusProduk(i){ products.splice(i,1); delete cart[i]; renderProducts(); renderPreorder(); }
+
+/* ===== PRE ORDER DATA ===== */
+let preOrders = [
+  { name:'Beige Hoodie', price:210000, stock:6, batch:'14', img:'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400&q=80', desc:'Hoodie premium limited edition', active:true },
+];
+
+function tambahPO(){
+  const name  = document.getElementById('poName').value.trim();
+  const price = Number(document.getElementById('poPrice').value)||0;
+  const stock = Number(document.getElementById('poStock').value)||0;
+  const batch = document.getElementById('poBatch').value;
+  const img   = document.getElementById('poImg').value.trim()||null;
+  const desc  = document.getElementById('poDesc').value.trim();
+  if(!name||!price){ alert('Nama produk dan harga wajib diisi!'); return; }
+  preOrders.unshift({name,price,stock,batch,img,desc,active:true});
+  ['poName','poPrice','poStock','poImg','poDesc'].forEach(id=>document.getElementById(id).value='');
+  renderPreorder();
+  alert(`✅ Pre Order "${name}" berhasil ditambahkan!`);
+}
+
+function hapusPO(i){
+  if(!confirm(`Hapus Pre Order "${preOrders[i].name}"?`)) return;
+  preOrders.splice(i,1);
+  renderPreorder();
+}
+
+function togglePOActive(i){
+  preOrders[i].active = !preOrders[i].active;
+  renderPreorder();
+}
+function setPOBatch(i,v){ preOrders[i].batch=v; renderPreorder(); }
+
+/* ===== RENDER PREORDER ===== */
+function renderPreorder(){
+  const isOwner = currentRole==='owner';
+
+  // Active PO cards — semua bisa lihat
+  const activePOs = preOrders.filter(p=>p.active);
+  document.getElementById('poActiveList').innerHTML = activePOs.length
+    ? activePOs.map((p,idx)=>{
+        const realIdx = preOrders.indexOf(p);
+        return `<div class="po-card">
+          ${p.img ? `<img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'">` : `<div class="po-img-ph">Tanpa gambar</div>`}
+          <div class="po-card-body">
+            <h4>${p.name}</h4>
+            <div class="po-price">${rupiah(p.price)}</div>
+            <div class="po-meta">⏳ Batch ${p.batch} hari · Stok est. ${p.stock}</div>
+            ${p.desc?`<div class="po-desc">"${p.desc}"</div>`:''}
+            <span class="badge blue">Pre Order</span>
+          </div>
+        </div>`;
+      }).join('')
+    : '<div class="po-empty">Belum ada produk pre-order aktif saat ini.</div>';
+
+  // Owner section
+  document.getElementById('poOwnerSection').style.display  = isOwner?'block':'none';
+  document.getElementById('poGuestNote').style.display     = isOwner?'none':'block';
+
+  if(!isOwner) return;
+
+  // Management table — hanya owner
+  document.getElementById('preorderTable').innerHTML = preOrders.length
+    ? preOrders.map((p,i)=>`
+      <tr style="${!p.active?'opacity:0.55;':''}" >
+        <td><strong>${p.name}</strong></td>
+        <td>${rupiah(p.price)}</td>
+        <td>
+          <label class="switch">
+            <input type="checkbox" ${p.active?'checked':''} onchange="togglePOActive(${i})">
+            <span class="slider"></span>
+          </label>
+          <span style="margin-left:8px;font-size:12px;color:${p.active?'#9caf88':'#c9b09a'}">${p.active?'Aktif':'Nonaktif'}</span>
+        </td>
+        <td>
+          <select onchange="setPOBatch(${i},this.value)">
+            <option value="7"  ${p.batch==='7'?'selected':''}>7 hari</option>
+            <option value="14" ${p.batch==='14'?'selected':''}>14 hari</option>
+            <option value="21" ${p.batch==='21'?'selected':''}>21 hari</option>
+            <option value="30" ${p.batch==='30'?'selected':''}>30 hari</option>
+          </select>
+        </td>
+        <td style="font-size:12px;color:#9a8070;">${p.desc||'—'}</td>
+        <td><button class="outline small danger" onclick="hapusPO(${i})">Hapus</button></td>
+      </tr>`).join('')
+    : '<tr><td colspan="6" class="empty-hint">Belum ada pre order</td></tr>';
+}
+
+/* ===== RENDER ORDERS ===== */
+function renderOrders(){
+  document.getElementById('orderTable').innerHTML = orders.map((o,i)=>`
+    <tr>
+      <td>${o.customer}</td><td>${o.product}</td><td>${o.qty}</td>
+      <td class="nominal-cell"><span>Rp</span><input type="number" value="${o.nominal}" onchange="updateNominal(${i},this.value)"></td>
+      <td><span class="badge ${o.po==='Ya'?'blue':'muted'}">${o.po==='Ya'?'Pre Order':'Reguler'}</span></td>
+      <td><button class="outline small" onclick="hapusOrder(${i})">Hapus</button></td>
+    </tr>`).join('')||'<tr><td colspan="6" class="empty-hint">Belum ada pesanan</td></tr>';
+
+  document.getElementById('recentOrderTable').innerHTML = orders.slice(-4).reverse().map(o=>`
+    <tr><td>${o.customer}</td><td>${o.product}</td><td>${rupiah(o.nominal)}</td>
+    <td><span class="badge ${o.po==='Ya'?'blue':'green'}">${o.po==='Ya'?'Pre Order':'Diproses'}</span></td></tr>`).join('')
+    ||'<tr><td colspan="4" class="empty-hint">Belum ada pesanan</td></tr>';
+  document.getElementById('statPesanan').textContent = orders.length;
+}
+function updateNominal(i,v){ orders[i].nominal=Number(v)||0; renderOrders(); }
+function hapusOrder(i){ orders.splice(i,1); renderOrders(); renderCustomers(); }
+
+/* ===== RENDER CUSTOMERS ===== */
+function renderCustomers(){
+  document.getElementById('customerTable').innerHTML = customers.map((c,i)=>`
+    <tr>
+      <td><input type="text" value="${c.name}" onchange="renameCustomer(${i},this.value)"></td>
+      <td>${c.wa}</td>
+      <td>${c.address||'-'}</td>
+      <td>${c.province||'-'}</td>
+      <td>${orders.filter(o=>o.customer===c.name).length}</td>
+      <td><button class="outline small" onclick="orderUntuk('${c.name.replace(/'/g,'')}')">+ Order</button></td>
+    </tr>`).join('')||'<tr><td colspan="6" class="empty-hint">Belum ada customer</td></tr>';
+  document.getElementById('customerNames').innerHTML = customers.map(c=>`<option value="${c.name}">`).join('');
+  document.getElementById('statCustomer').textContent = customers.length;
+}
+function renameCustomer(i,v){ customers[i].name=v; renderCustomers(); }
+function orderUntuk(name){
+  document.querySelector('[data-page="pesanan"]').click();
+  document.getElementById('orderCustomer').value=name;
+}
+
+/* ===== RENDER SHIPPING ===== */
+function renderShippings(){
+  document.getElementById('shippingTable').innerHTML = shippings.map((s,i)=>`
+    <tr><td>${s.name}</td><td>${s.phone}</td><td>${s.address}</td><td>${s.zip}</td><td>${s.province}</td>
+    <td><button class="outline small danger" onclick="hapusShipping(${i})">Hapus</button></td></tr>`)
+    .join('')||'<tr><td colspan="6" class="empty-hint">Belum ada data pengiriman</td></tr>';
+}
+function hapusShipping(i){ shippings.splice(i,1); renderShippings(); }
+
+function renderCustomerShipping(){
+  const mine = shippings.filter(s=>s.ownerName&&s.ownerName.toLowerCase()===currentCustomerName.toLowerCase());
+  document.getElementById('shippingTableCustomer').innerHTML = mine.map(s=>`
+    <tr><td>${s.name}</td><td>${s.phone}</td><td>${s.address}</td><td>${s.zip}</td><td>${s.province}</td></tr>`)
+    .join('')||'<tr><td colspan="5" class="empty-hint">Belum ada data pengiriman tersimpan</td></tr>';
+}
+
+function renderMyProfile(){
+  const cust = customers.find(c=>c.name.toLowerCase()===currentCustomerName.toLowerCase());
+  const myOrders = orders.filter(o=>o.customer.toLowerCase()===currentCustomerName.toLowerCase());
+  document.getElementById('myProfileInfo').innerHTML = cust
+    ? `<b>Nama:</b> ${cust.name}<br><b>WhatsApp:</b> ${cust.wa}<br><b>Alamat:</b> ${cust.address||'-'}<br><b>Provinsi:</b> ${cust.province||'-'}<br><b>Total Pesanan:</b> ${myOrders.length} pesanan`
+    : `<b>Nama:</b> ${currentCustomerName}<br><b>Status:</b> Pelanggan baru`;
+}
+
+/* ===== RENDER PROMOS ===== */
+function renderPromos(){
+  const isOwner = currentRole==='owner';
+  document.getElementById('promoBox').innerHTML = promos.map((p,i)=>`
+    <div class="promo-item">
+      <div class="promo-badge">${p.discountType==='persen'?p.discountValue+'%':rupiah(p.discountValue)+' off'}</div>
+      <h4>${p.title}</h4>
+      <div class="promo-code">🎟️ ${p.code||'Tanpa kode'}</div>
+      <p>${p.desc||(p.minBelanja?'Min. belanja '+rupiah(p.minBelanja):'Berlaku semua pembelian')}</p>
+      ${isOwner?`<button class="outline small danger promo-del" onclick="hapusPromo(${i})">Hapus</button>`:''}
+    </div>`).join('')||'<div class="empty-hint">Belum ada promo aktif</div>';
+}
+function hapusPromo(i){ promos.splice(i,1); renderPromos(); }
+function simpanPromo(){
+  const title = document.getElementById('promoTitle').value.trim();
+  const code  = document.getElementById('promoCode').value.trim().toUpperCase();
+  const dType = document.getElementById('promoDiscountType').value;
+  const dVal  = Number(document.getElementById('promoDiscountValue').value)||0;
+  const minB  = Number(document.getElementById('promoMinBelanja').value)||0;
+  const desc  = document.getElementById('promoDesc').value.trim();
+  if(!title||!code||!dVal){ alert('Judul, kode, dan nilai diskon wajib diisi!'); return; }
+  if(promos.find(p=>p.code===code)){ alert('Kode sudah ada!'); return; }
+  promos.unshift({title,code,discountType:dType,discountValue:dVal,minBelanja:minB,desc,usedCount:0,totalSaved:0});
+  ['promoTitle','promoCode','promoDiscountValue','promoMinBelanja','promoDesc'].forEach(id=>document.getElementById(id).value='');
+  renderPromos();
+  alert(`✅ Promo "${title}" (${code}) berhasil dibuat!`);
+}
+
+/* ===== VOUCHER ===== */
+function pakaiVoucher(){
+  const code = document.getElementById('voucherInputCode').value.trim().toUpperCase();
+  const res  = document.getElementById('voucherResult');
+  if(!code) return;
+  const promo = promos.find(p=>p.code===code);
+  if(!promo){
+    res.className='voucher-result error'; res.textContent='❌ Kode voucher tidak ditemukan.'; res.style.display='block'; return;
+  }
+  activeVoucher=promo;
+  res.className='voucher-result success';
+  res.textContent=`✅ Voucher "${promo.title}" aktif! ${promo.discountType==='persen'?'Diskon '+promo.discountValue+'%':'Diskon '+rupiah(promo.discountValue)}${promo.minBelanja?' (min. '+rupiah(promo.minBelanja)+')':''}`;
+  res.style.display='block';
+  document.getElementById('btnBatalVoucher').style.display='';
+  promo.usedCount=(promo.usedCount||0)+1;
+  cart={}; // reset cart saat ganti voucher
+  renderProducts(); updateCartSummary();
+}
+function batalVoucher(){
+  activeVoucher=null; cart={};
+  document.getElementById('voucherInputCode').value='';
+  document.getElementById('voucherResult').style.display='none';
+  document.getElementById('btnBatalVoucher').style.display='none';
+  renderProducts(); updateCartSummary();
+}
+
+/* ===== LAPORAN ===== */
+function renderLaporan(){
+  const tot = orders.reduce((s,o)=>s+o.nominal,0);
+  document.getElementById('laporanOmzet').textContent = rupiah(tot);
+  document.getElementById('laporanPesanan').textContent = orders.length;
+  document.getElementById('laporanRataRata').textContent = rupiah(orders.length?Math.round(tot/orders.length):0);
+  document.getElementById('laporanCustomer').textContent = customers.length;
+  document.getElementById('voucherUsageTable').innerHTML = promos.filter(p=>p.usedCount>0)
+    .map(p=>`<tr><td><strong>${p.code}</strong></td><td>${p.usedCount}x</td><td>${rupiah(p.totalSaved||0)}</td></tr>`)
+    .join('')||'<tr><td colspan="3" class="empty-hint">Belum ada voucher digunakan</td></tr>';
+}
+
+/* ===== GANTI PASSWORD ===== */
+function gantiPassword(){
+  const np = document.getElementById('newOwnerPass').value;
+  if(!np||np.length<4){ alert('Password minimal 4 karakter.'); return; }
+  OWNER_PASSWORD=np; localStorage.setItem('ownerPass',np);
+  document.getElementById('newOwnerPass').value='';
+  alert('✅ Password Owner berhasil diubah!');
+}
+
+/* ===== FORM HANDLERS ===== */
+document.getElementById('produkForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  products.push({ name:document.getElementById('prodName').value, status:document.getElementById('prodStatus').value,
+    price:Number(document.getElementById('prodPrice').value)||0, stock:Number(document.getElementById('prodStock').value)||0,
+    img:document.getElementById('prodImg').value||null, po:document.getElementById('prodStatus').value==='Pre Order', batch:'7' });
+  e.target.reset(); renderProducts(); renderPreorder();
+});
+document.getElementById('orderForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const customer=document.getElementById('orderCustomer').value;
+  orders.push({ customer, product:document.getElementById('orderProduct').value,
+    qty:Number(document.getElementById('orderQty').value)||1,
+    nominal:Number(document.getElementById('orderNominal').value)||0,
+    po:document.getElementById('orderPO').value });
+  if(!customers.find(c=>c.name===customer)) customers.push({name:customer,wa:'-',address:'-',province:'-',orders:1});
+  e.target.reset(); renderOrders(); renderCustomers();
+  alert('Pesanan berhasil disimpan!');
+});
+document.getElementById('customerForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  customers.push({ name:document.getElementById('custName').value, wa:document.getElementById('custWa').value,
+    address:document.getElementById('custAddress').value, province:document.getElementById('custProvince').value, orders:0 });
+  e.target.reset(); renderCustomers();
+});
+document.getElementById('shippingForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  shippings.push({ name:document.getElementById('shipName').value, phone:document.getElementById('shipPhone').value,
+    address:document.getElementById('shipAddress').value, zip:document.getElementById('shipZip').value,
+    province:document.getElementById('shipProvince').value, note:document.getElementById('shipNote').value, ownerName:document.getElementById('shipName').value });
+  e.target.reset(); renderShippings(); alert('Data pengiriman berhasil disimpan!');
+});
+document.getElementById('shippingFormCustomer').addEventListener('submit',e=>{
+  e.preventDefault();
+  shippings.push({ name:document.getElementById('shipNameCust').value, phone:document.getElementById('shipPhoneCust').value,
+    address:document.getElementById('shipAddressCust').value, zip:document.getElementById('shipZipCust').value,
+    province:document.getElementById('shipProvinceCust').value, note:document.getElementById('shipNoteCust').value, ownerName:currentCustomerName });
+  e.target.reset(); renderCustomerShipping(); alert('Data pengiriman berhasil disimpan!');
+});
+document.getElementById('settingsForm').addEventListener('submit',e=>{ e.preventDefault(); alert('Pengaturan berhasil disimpan!'); });
+
+/* ===== INIT ===== */
+function renderAll(){ renderProducts(); renderPreorder(); renderOrders(); renderCustomers(); renderShippings(); renderPromos(); }
+renderAll();
+</script>
+</body>
+</html>
